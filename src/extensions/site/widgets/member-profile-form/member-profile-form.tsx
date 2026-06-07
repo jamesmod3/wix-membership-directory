@@ -1,13 +1,13 @@
-import { items } from '@wix/data';
 import { window as wixWindow } from '@wix/site-window';
+import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
-
-const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 class MemberProfileForm extends HTMLElement {
   static get observedAttributes() {
     return [];
   }
+
+  private store: DataStore | null = null;
 
   constructor() {
     super();
@@ -21,22 +21,8 @@ class MemberProfileForm extends HTMLElement {
 
   async init() {
     const viewMode = await wixWindow.viewMode();
-
-    if (viewMode === 'Editor') {
-      this.renderEditorPlaceholder();
-      return;
-    }
-
+    this.store = createDataStore(viewMode === 'Editor');
     this.renderForm();
-  }
-
-  renderEditorPlaceholder() {
-    this.innerHTML = `
-      <div style="padding:40px;border:2px dashed #ccc;border-radius:8px;text-align:center;color:#999;font-family:sans-serif;">
-        <h3 style="margin:0 0 8px;">Member Profile Form</h3>
-        <p style="margin:0;font-size:14px;">Members will fill out their profile here on the live site.</p>
-      </div>
-    `;
   }
 
   renderForm() {
@@ -44,6 +30,10 @@ class MemberProfileForm extends HTMLElement {
       <div class="${styles.root}">
         <h2 class="${styles.heading}">Create Your Member Profile</h2>
         <form id="member-form" class="${styles.form}">
+          <label class="${styles.label}">
+            Business Name
+            <input type="text" name="businessName" class="${styles.input}" placeholder="Your business or organization name" />
+          </label>
           <label class="${styles.label}">
             Full Name <span class="${styles.required}">*</span>
             <input type="text" name="name" required class="${styles.input}" />
@@ -93,6 +83,7 @@ class MemberProfileForm extends HTMLElement {
 
     const email = (formData.get('email') as string).trim().toLowerCase();
     const profileData: Record<string, any> = {
+      businessName: (formData.get('businessName') as string).trim(),
       name: (formData.get('name') as string).trim(),
       title: (formData.get('title') as string).trim(),
       bio: (formData.get('bio') as string).trim(),
@@ -108,37 +99,26 @@ class MemberProfileForm extends HTMLElement {
     submitBtn.textContent = 'Checking...';
 
     try {
-      const existing = await items.query(COLLECTION_ID)
-        .eq('email', email)
-        .limit(1)
-        .find();
-
+      const existing = await this.store!.queryByEmail(email);
       const isEdit = existing.items.length > 0;
 
       submitBtn.textContent = 'Saving...';
 
       if (isEdit) {
-        await items.update(COLLECTION_ID, {
-          _id: existing.items[0]._id,
-          ...profileData,
-        });
+        await this.store!.update(existing.items[0]._id, profileData);
       } else {
-        await items.insert(COLLECTION_ID, {
+        await this.store!.insert({
           ...profileData,
           joinDate: new Date().toISOString().split('T')[0],
         });
       }
 
       this.showMessage(
-        isEdit ? 'Profile updated!' : 'Profile created! Redirecting to members page...',
+        isEdit ? 'Profile updated!' : 'Profile created!',
         'success'
       );
       submitBtn.textContent = isEdit ? 'Update Profile' : 'Submitted';
       submitBtn.disabled = false;
-
-      if (!isEdit) {
-        setTimeout(() => { window.location.href = '/membership-directory-profile'; }, 2500);
-      }
     } catch (error) {
       console.error('Failed to save profile:', error);
       const message = error instanceof Error ? error.message : String(error);
@@ -154,12 +134,6 @@ class MemberProfileForm extends HTMLElement {
       el.textContent = text;
       el.className = `${styles.message} ${styles[type]}`;
     }
-  }
-
-  esc(str: string): string {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
   }
 }
 

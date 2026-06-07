@@ -8,6 +8,7 @@ export default {
   displayField: 'name',
   fields: [
     { key: 'memberId', displayName: 'Member ID', type: 'TEXT' },
+    { key: 'businessName', displayName: 'Business Name', type: 'TEXT' },
     { key: 'name', displayName: 'Full Name', type: 'TEXT' },
     { key: 'title', displayName: 'Title / Role', type: 'TEXT' },
     { key: 'bio', displayName: 'Biography', type: 'TEXT' },
