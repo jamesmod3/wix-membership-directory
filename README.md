@@ -14,9 +14,11 @@ A new **members-only form** (custom element widget) that submits directly to a C
 
 | Component | What it does |
 |---|---|
-| **Members Data Collection** | CMS collection storing name, title, bio, photo, email, phone, website, social links, join date, published flag |
-| **Member Profile Form** (widget) | Members fill this out to create/edit their profile. Redirects to `/membership-directory-profile` on success |
+| **Members Data Collection** | CMS collection storing business name, name, title, bio, photo, email, phone, website, social links, join date, published flag |
+| **Member Profile Form** (widget) | Members fill this out to create/edit their profile |
 | **Members Directory** (dashboard page) | Admin table to publish/unpublish, delete, and review submissions |
+| **Data Store** (abstraction) | Switches between `@wix/data` (live) and `localStorage` (Editor/dev) — instant iteration without preview deploys |
+| **Sign-up Redirect** (embedded script) | Detects new member registration and auto-redirects to the profile form |
 
 ## Philosophy
 
@@ -29,12 +31,24 @@ A new **members-only form** (custom element widget) that submits directly to a C
 1. Create a members-only page called `/membership-directory-profile` in the Editor
 2. Add the **Member Profile Form** widget from your app to that page
 3. Create a public `/members` page with a repeater connected to the `@jameslaymusic/membership-directory/members` collection, filtered by `published: true`
+4. In **Settings → Member Access → Login & Registration**, set the post-login redirect URL to `/membership-directory-profile`
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Hot-reload dev server connected to your test site |
-| `npm run preview` | Deploy preview build to test site |
+| `npm run dev` | Hot-reload dev server — widget uses localStorage, no preview needed for UI/form changes |
+| `npm run preview` | Deploy preview build to test site (needed to test CMS integration) |
 | `npm run build` | Production build |
 | `npm run release` | Release to production |
+
+## Roadmap
+
+- [x] Members CMS data collection
+- [x] Member profile form widget (create/edit by email)
+- [x] Admin dashboard page (publish/unpublish, delete)
+- [x] Data store abstraction (localStorage in dev, Wix Data in prod)
+- [ ] Sign-up redirect detection — identify Wix's post-registration signal and auto-redirect
+- [ ] Dashboard config for embedded script (enable/disable, target URL)
+- [ ] Public members directory repeater guide / template
+- [ ] Deploy to Danielle's live site
