@@ -9,7 +9,7 @@ import {
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 
-const COLLECTION_ID = 'members';
+const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 const CMS_URL = `https://manage.wix.com/dashboard/1a1f2b44-82ff-4519-a4c7-4aebc8c5963f/wix-cms/data/${encodeURIComponent(COLLECTION_ID)}`;
 
 const DashboardPage: FC = () => {

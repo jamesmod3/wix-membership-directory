@@ -4,7 +4,7 @@ interface DataStore {
   update(id: string, data: Record<string, any>): Promise<any>
 }
 
-const COLLECTION_ID = 'members';
+const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 function makeWixStore(): DataStore {
   async function queryByEmail(email: string) {
