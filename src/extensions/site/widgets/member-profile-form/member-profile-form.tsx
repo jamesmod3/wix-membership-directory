@@ -8,6 +8,7 @@ class MemberProfileForm extends HTMLElement {
   }
 
   private store: DataStore | null = null;
+  private existingItemId: string | null = null;
 
   constructor() {
     super();
@@ -22,52 +23,66 @@ class MemberProfileForm extends HTMLElement {
   async init() {
     const viewMode = await wixWindow.viewMode();
     this.store = createDataStore(viewMode === 'Editor');
-    this.renderForm();
+
+    try {
+      const result = await this.store.queryMyProfile();
+      if (result.items.length > 0) {
+        const item = result.items[0];
+        this.existingItemId = item._id;
+        this.renderForm(item);
+      } else {
+        this.renderForm(null);
+      }
+    } catch (error) {
+      console.error('Failed to check existing profile:', error);
+      this.renderForm(null);
+    }
   }
 
-  renderForm() {
+  renderForm(data: any | null) {
+    const isEdit = !!data;
+
     this.innerHTML = `
       <div class="${styles.root}">
-        <h2 class="${styles.heading}">Create Your Member Profile</h2>
+        <h2 class="${styles.heading}">${isEdit ? 'Edit Your Profile' : 'Create Your Member Profile'}</h2>
         <form id="member-form" class="${styles.form}">
           <label class="${styles.label}">
             Business Name
-            <input type="text" name="businessName" class="${styles.input}" placeholder="Your business or organization name" />
+            <input type="text" name="businessName" value="${this.esc(data?.businessName || '')}" class="${styles.input}" placeholder="Your business or organization name" />
           </label>
           <label class="${styles.label}">
             Full Name <span class="${styles.required}">*</span>
-            <input type="text" name="name" required class="${styles.input}" />
+            <input type="text" name="name" value="${this.esc(data?.name || '')}" required class="${styles.input}" />
           </label>
           <label class="${styles.label}">
             Title / Role
-            <input type="text" name="title" class="${styles.input}" placeholder="e.g. Board Member, Volunteer" />
+            <input type="text" name="title" value="${this.esc(data?.title || '')}" class="${styles.input}" placeholder="e.g. Board Member, Volunteer" />
           </label>
           <label class="${styles.label}">
             Biography
-            <textarea name="bio" rows="4" class="${styles.textarea}"></textarea>
+            <textarea name="bio" rows="4" class="${styles.textarea}">${this.esc(data?.bio || '')}</textarea>
           </label>
           <label class="${styles.label}">
             Photo URL
-            <input type="url" name="photo" class="${styles.input}" placeholder="https://example.com/photo.jpg" />
+            <input type="url" name="photo" value="${this.esc(data?.photo || '')}" class="${styles.input}" placeholder="https://example.com/photo.jpg" />
           </label>
           <label class="${styles.label}">
             Email <span class="${styles.required}">*</span>
-            <input type="email" name="email" required class="${styles.input}" />
-            <small style="color:#666;">Use the same email each time to edit your profile later.</small>
+            <input type="email" name="email" value="${this.esc(data?.email || '')}" required class="${styles.input}" />
           </label>
           <label class="${styles.label}">
             Phone
-            <input type="tel" name="phone" class="${styles.input}" />
+            <input type="tel" name="phone" value="${this.esc(data?.phone || '')}" class="${styles.input}" />
           </label>
           <label class="${styles.label}">
             Website
-            <input type="url" name="website" class="${styles.input}" />
+            <input type="url" name="website" value="${this.esc(data?.website || '')}" class="${styles.input}" />
           </label>
           <label class="${styles.label}">
             Social Links (one per line)
-            <textarea name="socialLinks" rows="3" class="${styles.textarea}" placeholder="https://facebook.com/your-profile&#10;https://instagram.com/your-profile"></textarea>
+            <textarea name="socialLinks" rows="3" class="${styles.textarea}" placeholder="https://facebook.com/your-profile&#10;https://instagram.com/your-profile">${this.esc(data?.socialLinks || '')}</textarea>
           </label>
-          <button type="submit" class="${styles.button}">Submit Profile</button>
+          <button type="submit" class="${styles.button}">${isEdit ? 'Update Profile' : 'Submit Profile'}</button>
         </form>
         <div id="form-message" class="${styles.message}"></div>
       </div>
@@ -81,14 +96,13 @@ class MemberProfileForm extends HTMLElement {
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const email = (formData.get('email') as string).trim().toLowerCase();
     const profileData: Record<string, any> = {
       businessName: (formData.get('businessName') as string).trim(),
       name: (formData.get('name') as string).trim(),
       title: (formData.get('title') as string).trim(),
       bio: (formData.get('bio') as string).trim(),
       photo: (formData.get('photo') as string).trim(),
-      email,
+      email: (formData.get('email') as string).trim().toLowerCase(),
       phone: (formData.get('phone') as string).trim(),
       website: (formData.get('website') as string).trim(),
       socialLinks: (formData.get('socialLinks') as string).trim(),
@@ -96,16 +110,11 @@ class MemberProfileForm extends HTMLElement {
 
     const submitBtn = form.querySelector('button')!;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Checking...';
+    submitBtn.textContent = 'Saving...';
 
     try {
-      const existing = await this.store!.queryByEmail(email);
-      const isEdit = existing.items.length > 0;
-
-      submitBtn.textContent = 'Saving...';
-
-      if (isEdit) {
-        await this.store!.update(existing.items[0]._id, profileData);
+      if (this.existingItemId) {
+        await this.store!.update(this.existingItemId, profileData);
       } else {
         await this.store!.insert({
           ...profileData,
@@ -114,16 +123,16 @@ class MemberProfileForm extends HTMLElement {
       }
 
       this.showMessage(
-        isEdit ? 'Profile updated!' : 'Profile created!',
+        this.existingItemId ? 'Profile updated!' : 'Profile created!',
         'success'
       );
-      submitBtn.textContent = isEdit ? 'Update Profile' : 'Submitted';
+      submitBtn.textContent = this.existingItemId ? 'Update Profile' : 'Submitted';
       submitBtn.disabled = false;
     } catch (error) {
       console.error('Failed to save profile:', error);
       const message = error instanceof Error ? error.message : String(error);
       this.showMessage('Failed to save profile: ' + message, 'error');
-      submitBtn.textContent = 'Submit Profile';
+      submitBtn.textContent = this.existingItemId ? 'Update Profile' : 'Submit Profile';
       submitBtn.disabled = false;
     }
   }
@@ -134,6 +143,12 @@ class MemberProfileForm extends HTMLElement {
       el.textContent = text;
       el.className = `${styles.message} ${styles[type]}`;
     }
+  }
+
+  esc(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 }
 

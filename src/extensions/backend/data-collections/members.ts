@@ -7,7 +7,6 @@ export default {
   displayName: 'Members',
   displayField: 'name',
   fields: [
-    { key: 'memberId', displayName: 'Member ID', type: 'TEXT' },
     { key: 'businessName', displayName: 'Business Name', type: 'TEXT' },
     { key: 'name', displayName: 'Full Name', type: 'TEXT' },
     { key: 'title', displayName: 'Title / Role', type: 'TEXT' },
@@ -21,14 +20,13 @@ export default {
     { key: 'published', displayName: 'Published', type: 'BOOLEAN' },
   ],
   dataPermissions: {
-    itemRead: 'ANYONE',
+    itemRead: 'SITE_MEMBER_AUTHOR',
     itemInsert: 'SITE_MEMBER_AUTHOR',
     itemUpdate: 'SITE_MEMBER_AUTHOR',
     itemRemove: 'PRIVILEGED',
   },
   indexes: [
     { fields: [{ path: 'email' }], unique: true },
-    { fields: [{ path: 'memberId' }], unique: true },
   ],
   initialData: [],
 } satisfies DataCollection;
