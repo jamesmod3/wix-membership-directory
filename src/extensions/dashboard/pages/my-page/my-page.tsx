@@ -47,15 +47,35 @@ const DashboardPage: FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await items.query(COLLECTION_ID)
-        .descending('_createdDate')
-        .find();
+      let query = items.query(COLLECTION_ID)
+        .descending('_createdDate');
+
+      const result = await query.find();
       setMembers(result.items as MemberItem[]);
     } catch (err: any) {
       console.error('Failed to fetch members:', err);
       const details = err.details || {};
       const msg = err.message || 'Unknown error';
       setError(`${msg}${details.applicationError ? ` (code: ${details.applicationError.code})` : ''}`);
+
+      if (details.applicationError?.code === 'WDE0025') {
+        try {
+          const res = await fetch('https://www.wixapis.com/wix-data/v2/items/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              collectionId: COLLECTION_ID,
+              query: {},
+            }),
+          });
+          const data = await res.json();
+          console.log('REST API result:', res.status, data);
+          setError(`REST API: ${res.status} - ${JSON.stringify(data).slice(0, 200)}`);
+        } catch (e: any) {
+          console.log('REST API error:', e);
+        }
+      }
     } finally {
       setLoading(false);
     }
