@@ -1,0 +1,172 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - region "top of page"
+    - button "Skip to Main Content"
+    - link "Built on Wix Studio" [ref=e5] [cursor=pointer]:
+      - /url: //wix.com/studio
+      - generic [ref=e6]:
+        - text: Built on
+        - img "Wix Studio" [ref=e7]
+    - generic [ref=e15]:
+      - group:
+        - banner:
+          - generic [ref=e16]:
+            - generic [ref=e20]:
+              - link "Homepage" [ref=e23] [cursor=pointer]:
+                - /url: https://jameslaymusic.wixstudio.com/my-site-2
+                - img "Homepage" [ref=e25]
+              - paragraph [ref=e30]:
+                - link "Business Name" [ref=e32] [cursor=pointer]:
+                  - /url: https://jameslaymusic.wixstudio.com/my-site-2
+            - navigation "Site" [ref=e304]:
+              - list [ref=e305]:
+                - listitem [ref=e306]:
+                  - link "Home" [ref=e309] [cursor=pointer]:
+                    - /url: https://jameslaymusic.wixstudio.com/my-site-2
+                    - generic [ref=e310]: Home
+            - button "Cart with 0 items" [ref=e85] [cursor=pointer]:
+              - img [ref=e49]:
+                - generic [ref=e86]: "0"
+            - button "Log In" [ref=e54] [cursor=pointer]:
+              - img [ref=e58]
+              - generic [ref=e61]: Log In
+        - main:
+          - generic [ref=e62]:
+            - group:
+              - article [ref=e92]:
+                - generic [ref=e93]:
+                  - generic [ref=e98]:
+                    - button "1 / 2 2 / 2" [ref=e100]:
+                      - generic [ref=e104]:
+                        - group "1 / 2" [ref=e105]:
+                          - generic [ref=e109]:
+                            - img "Foaming Facial Cleanser" [ref=e112]
+                            - button "Enlarge" [ref=e113]:
+                              - img [ref=e116]
+                        - group "2 / 2":
+                          - generic:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - img "Foaming Facial Cleanser"
+                                  - button "Enlarge":
+                                    - generic:
+                                      - generic:
+                                        - img
+                    - generic [ref=e120]:
+                      - generic [ref=e122]:
+                        - group "1 / 2" [ref=e123]:
+                          - 'button "Thumbnail: Foaming Facial Cleanser" [pressed] [ref=e124] [cursor=pointer]':
+                            - 'img "Thumbnail: Foaming Facial Cleanser" [ref=e127]'
+                        - group "2 / 2" [ref=e128]:
+                          - 'button "Thumbnail: Foaming Facial Cleanser" [ref=e129] [cursor=pointer]':
+                            - 'img "Thumbnail: Foaming Facial Cleanser" [ref=e132]'
+                      - button:
+                        - img [ref=e135] [cursor=pointer]
+                  - generic [ref=e137]:
+                    - heading "Foaming Facial Cleanser" [level=1] [ref=e139]
+                    - generic [ref=e144]:
+                      - text: $85.00
+                      - generic [ref=e145]: Price
+                    - generic [ref=e146]:
+                      - generic [ref=e148]:
+                        - group "Size" [ref=e151]:
+                          - generic [ref=e152]: Size*
+                          - generic "Size" [ref=e153]:
+                            - generic [ref=e155] [cursor=pointer]:
+                              - radio "100ml" [ref=e156]
+                              - generic [ref=e158]: 100ml
+                            - generic [ref=e160] [cursor=pointer]:
+                              - radio "150ml" [ref=e161]
+                              - generic [ref=e163]: 150ml
+                            - generic [ref=e165] [cursor=pointer]:
+                              - radio "250ml" [ref=e166]
+                              - generic [ref=e168]: 250ml
+                            - generic [ref=e170] [cursor=pointer]:
+                              - radio "500ml" [ref=e171]
+                              - generic [ref=e173]: 500ml
+                        - group "Quantity" [ref=e177]:
+                          - generic [ref=e178]: Quantity*
+                          - generic [ref=e179]:
+                            - button "Decrement" [disabled] [ref=e180]:
+                              - img [ref=e181]
+                            - spinbutton "Quantity" [ref=e185]: "1"
+                            - button "Increment" [ref=e186] [cursor=pointer]:
+                              - img [ref=e187]
+                      - button "Add to Cart" [ref=e191] [cursor=pointer]:
+                        - generic [ref=e192]: Add to Cart
+                      - button "Buy Now" [ref=e198] [cursor=pointer]:
+                        - generic [ref=e199]: Buy Now
+                    - generic [ref=e202]:
+                      - paragraph [ref=e208]:
+                        - generic [ref=e209]: I'm a product description. I'm a great place to add more details about your product such as sizing, material, care instructions and cleaning instructions.
+                      - button [ref=e210] [cursor=pointer]: Read more
+                    - list [ref=e214]:
+                      - listitem [ref=e215]:
+                        - button "Product Info" [expanded] [ref=e216] [cursor=pointer]:
+                          - heading "Product Info" [level=2] [ref=e217]
+                          - img [ref=e219]
+                        - paragraph [ref=e235]:
+                          - generic [ref=e236]:
+                            - text: I'm a great place to add more information about your product, such as
+                            - strong [ref=e237]: sizing
+                            - text: ","
+                            - strong [ref=e238]: material
+                            - text: ","
+                            - strong [ref=e239]: care
+                            - text: ", and"
+                            - strong [ref=e240]: cleaning instructions
+                            - text: . This is also a great space to highlight what makes this product special and how your customers can benefit from this item.
+                      - listitem [ref=e241]:
+                        - button "Return & Refund Policy" [ref=e242] [cursor=pointer]:
+                          - heading "Return & Refund Policy" [level=2] [ref=e243]
+                          - img [ref=e245]
+                      - listitem [ref=e250]:
+                        - button "Shipping Info" [ref=e251] [cursor=pointer]:
+                          - heading "Shipping Info" [level=2] [ref=e252]
+                          - img [ref=e254]
+                    - list [ref=e261]:
+                      - listitem [ref=e263]:
+                        - link "Share on Facebook" [ref=e267] [cursor=pointer]:
+                          - /url: http://www.facebook.com/sharer.php?u=https%3A%2F%2Fjameslaymusic.wixstudio.com%2Fmy-site-2%2Fproduct-page%2Ffoaming-facial-cleanser&title=Foaming+Facial+Cleanser
+                          - img [ref=e270]
+                      - listitem [ref=e273]:
+                        - link "Pin on Pinterest" [ref=e277] [cursor=pointer]:
+                          - /url: http://pinterest.com/pin/create/button/?url=https%3A%2F%2Fjameslaymusic.wixstudio.com%2Fmy-site-2%2Fproduct-page%2Ffoaming-facial-cleanser&media=https%3A%2F%2Fstatic.wixstatic.com%2Fmedia%2F22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg%2Fv1%2Ffill%2Fw_4000%2Ch_4000%2Cal_c%2Cq_85%2F22e53e_ee2ff808d8aa4e47a793cef6550d2306~mv2.jpg&description=Foaming+Facial+Cleanser
+                          - img [ref=e280]
+                      - listitem [ref=e283]:
+                        - link "Share on WhatsApp" [ref=e287] [cursor=pointer]:
+                          - /url: https://api.whatsapp.com/send?text=https%3A%2F%2Fjameslaymusic.wixstudio.com%2Fmy-site-2%2Fproduct-page%2Ffoaming-facial-cleanser
+                          - img [ref=e290]
+                      - listitem [ref=e293]:
+                        - link "Share on X" [ref=e297] [cursor=pointer]:
+                          - /url: https://twitter.com/intent/tweet?url=https%3A%2F%2Fjameslaymusic.wixstudio.com%2Fmy-site-2%2Fproduct-page%2Ffoaming-facial-cleanser&text=Foaming+Facial+Cleanser%0A
+                          - img [ref=e300]
+        - contentinfo:
+          - paragraph [ref=e81]:
+            - generic [ref=e82]:
+              - text: © 2035 by Business Name. Built on
+              - link "Wix Studio" [ref=e84] [cursor=pointer]:
+                - /url: https://www.wix.com/studio
+    - dialog "Sign Up" [active] [ref=e312]:
+      - generic [ref=e314]:
+        - heading "Sign Up" [level=2] [ref=e315]
+        - generic [ref=e316]:
+          - generic [ref=e317]:
+            - text: Already a member?
+            - button "Already a member? Log In" [ref=e318] [cursor=pointer]: Log In
+          - generic [ref=e320]:
+            - button "Sign up with Google" [ref=e323] [cursor=pointer]:
+              - generic [ref=e324]: Sign up with Google
+            - button "Sign up with Facebook" [ref=e327] [cursor=pointer]:
+              - generic [ref=e328]: Sign up with Facebook
+            - paragraph
+          - separator [ref=e329]: or
+          - button "Sign up with email" [ref=e332] [cursor=pointer]:
+            - generic [ref=e333]: Sign up with email
+      - button "Close" [ref=e334]:
+        - img
+    - region "bottom of page"
+  - log [ref=e302]

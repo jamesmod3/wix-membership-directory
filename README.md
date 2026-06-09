@@ -18,7 +18,6 @@ A new **members-only form** (custom element widget) that submits directly to a C
 | **Member Profile Form** (widget) | Members fill this out to create/edit their profile |
 | **Members Directory** (dashboard page) | Admin table to publish/unpublish, delete, and review submissions |
 | **Data Store** (abstraction) | Switches between `@wix/data` (live) and `localStorage` (Editor/dev) — instant iteration without preview deploys |
-| **Sign-up Redirect** (embedded script) | Detects new member registration and auto-redirects to the profile form |
 
 ## Philosophy
 
@@ -48,7 +47,5 @@ A new **members-only form** (custom element widget) that submits directly to a C
 - [x] Member profile form widget (create/edit by email)
 - [x] Admin dashboard page (publish/unpublish, delete)
 - [x] Data store abstraction (localStorage in dev, Wix Data in prod)
-- [ ] Sign-up redirect detection — identify Wix's post-registration signal and auto-redirect
-- [ ] Dashboard config for embedded script (enable/disable, target URL)
 - [ ] Public members directory repeater guide / template
 - [ ] Deploy to Danielle's live site

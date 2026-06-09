@@ -1,0 +1,45 @@
+- generic [ref=e5]:
+  - button "Wix" [ref=e8] [cursor=pointer]:
+    - img "Wix" [ref=e10]
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - heading "Sign up" [level=1] [ref=e15]
+      - generic [ref=e16]:
+        - text: Already have an account?
+        - link "Log In" [ref=e17] [cursor=pointer]:
+          - /url: /signin/?originUrl=https%3A%2F%2Fdev.wix.com%2Fwix-cli-redirect-service%2Fredirect%3Fplatform%3Dsite%26versionOverrideId%3D23ea6da5-40da-4a3f-9d3e-fb52e1f709f2%26tenantId%3D1a1f2b44-82ff-4519-a4c7-4aebc8c5963f%26appId%3D236fcb9e-7372-469f-9709-9a9ee7a6e470&redirectTo=https%3A%2F%2Fdev.wix.com%2Fwix-cli-redirect-service%2Fredirect%3Fplatform%3Dsite%26versionOverrideId%3D23ea6da5-40da-4a3f-9d3e-fb52e1f709f2%26tenantId%3D1a1f2b44-82ff-4519-a4c7-4aebc8c5963f%26appId%3D236fcb9e-7372-469f-9709-9a9ee7a6e470&overrideLocale=en&forceRender=true
+          - generic [ref=e18]: Log In
+    - generic [ref=e20]:
+      - group "More login options" [ref=e21]:
+        - button "Continue with Google" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: Continue with Google
+        - button "Continue with Facebook" [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: Continue with Facebook
+        - button "Continue with Apple" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: Continue with Apple
+      - generic [ref=e37]: or
+      - generic [ref=e39]:
+        - generic [ref=e42]:
+          - generic:
+            - generic: Email
+          - textbox "Email" [ref=e46]:
+            - /placeholder: ""
+        - button "Continue with Email" [ref=e50] [cursor=pointer]:
+          - generic [ref=e52]: Continue with Email
+    - generic [ref=e53]:
+      - separator [ref=e54]
+      - generic [ref=e57]:
+        - text: "* By signing up, you agree to our"
+        - link "Terms of Use" [ref=e58] [cursor=pointer]:
+          - /url: https://www.wix.com/about/terms-of-use
+        - text: and acknowledge you’ve read our
+        - link "Privacy Policy" [ref=e59] [cursor=pointer]:
+          - /url: https://www.wix.com/about/privacy
+  - generic [ref=e62]:
+    - text: This site is protected by reCAPTCHA Enterprise.
+    - link "Google's Privacy Policy" [ref=e63] [cursor=pointer]:
+      - /url: https://policies.google.com/privacy
+    - text: and
+    - link "Terms of Service" [ref=e64] [cursor=pointer]:
+      - /url: https://policies.google.com/terms
+    - text: apply.

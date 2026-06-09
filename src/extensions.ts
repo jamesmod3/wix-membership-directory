@@ -5,7 +5,5 @@ import dataCollections from './extensions/backend/data-collections/data-collecti
 
 import memberProfileForm from './extensions/site/widgets/member-profile-form/member-profile-form.extension.ts';
 
-import signupRedirect from './extensions/site/embedded-scripts/signup-redirect/signup-redirect.extension.ts';
-
 export default app()
-  .use(myPage).use(dataCollections).use(memberProfileForm).use(signupRedirect);
+  .use(myPage).use(dataCollections).use(memberProfileForm);
