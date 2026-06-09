@@ -47,7 +47,8 @@ const DashboardPage: FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await items.query(COLLECTION_ID)
+      const elevatedQuery = auth.elevate(items.query);
+      const result = await elevatedQuery(COLLECTION_ID)
         .descending('_createdDate')
         .find();
       setMembers(result.items as MemberItem[]);
