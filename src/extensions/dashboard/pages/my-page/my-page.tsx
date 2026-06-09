@@ -27,12 +27,10 @@ const DashboardPage: FC = () => {
                 <Text weight="normal" size="medium">
                   Member profiles are stored in the CMS collection
                 </Text>
-
                 <Text size="small" secondary>
                   Manage member profiles (publish, unpublish, edit, delete) in the
                   Wix Content Manager.
                 </Text>
-
                 <Box gap="SP2">
                   <Button onClick={() => window.open(CMS_URL, '_blank')}>
                     Open in Content Manager
