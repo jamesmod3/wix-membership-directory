@@ -15,6 +15,10 @@ import {
   Badge,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
+import { items } from '@wix/data';
+import { auth } from '@wix/essentials';
+
+const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 interface MemberItem {
   _id: string;
@@ -43,16 +47,15 @@ const DashboardPage: FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/members');
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || `HTTP ${res.status}`);
-      }
-      const data = await res.json();
-      setMembers(data.items as MemberItem[]);
-    } catch (err) {
+      const result = await items.query(COLLECTION_ID)
+        .descending('_createdDate')
+        .find();
+      setMembers(result.items as MemberItem[]);
+    } catch (err: any) {
       console.error('Failed to fetch members:', err);
-      setError('Failed to load members. Make sure the collection exists and the app is installed correctly.');
+      const details = err.details || {};
+      const msg = err.message || 'Unknown error';
+      setError(`${msg}${details.applicationError ? ` (code: ${details.applicationError.code})` : ''}`);
     } finally {
       setLoading(false);
     }
@@ -65,12 +68,8 @@ const DashboardPage: FC = () => {
   const handleTogglePublish = async (item: MemberItem) => {
     setTogglingId(item._id);
     try {
-      const res = await fetch('/api/members', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: item._id, published: !item.published }),
-      });
-      if (!res.ok) throw new Error('Failed to update');
+      const elevatedUpdate = auth.elevate(items.update);
+      await elevatedUpdate(COLLECTION_ID, { _id: item._id, published: !item.published });
       setMembers(prev => prev.map(m => m._id === item._id ? { ...m, published: !m.published } : m));
     } catch (err) {
       console.error('Failed to toggle publish:', err);
@@ -82,8 +81,8 @@ const DashboardPage: FC = () => {
   const handleDelete = async (itemId: string) => {
     setDeletingId(itemId);
     try {
-      const res = await fetch(`/api/members?id=${itemId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
+      const elevatedRemove = auth.elevate(items.remove);
+      await elevatedRemove(COLLECTION_ID, itemId);
       setMembers(prev => prev.filter(m => m._id !== itemId));
     } catch (err) {
       console.error('Failed to delete member:', err);
