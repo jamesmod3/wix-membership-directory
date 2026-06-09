@@ -55,9 +55,10 @@ Initial setup can be verified in the Wix Dashboard → Content Manager — look 
 
 ## Roadmap
 
-- [x] Members CMS data collection
-- [x] Member profile form widget (create/edit by email)
-- [x] Admin dashboard page (publish/unpublish, delete)
+- [x] Members CMS data collection (auto-created via Data Collection extension)
+- [x] Member profile form widget (create/edit, scoped by `_owner`)
+- [x] Admin dashboard page (link to Content Manager)
 - [x] Data store abstraction (localStorage in dev, Wix Data in prod)
+- [x] DC-DATA permissions configured in Dev Center
 - [ ] Public members directory repeater guide / template
 - [ ] Deploy to Danielle's live site
