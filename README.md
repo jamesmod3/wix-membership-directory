@@ -25,12 +25,24 @@ A new **members-only form** (custom element widget) that submits directly to a C
 - **Reversible.** This app installs and uninstalls cleanly. Uninstall the app → widget disappears, collection stays (data preserved). No permanent site modifications.
 - **Portable.** Deploy to any Wix site. Per-site setup: create one page, add one widget, connect one repeater. That's it.
 
+## Pre-deploy: Dev Center Permissions
+
+Before deploying to any site, the app must have DC-DATA scopes enabled:
+
+1. Go to [Wix Dev Center](https://manage.wix.com/studio/custom-apps/) → select this app → **Develop → Permissions**
+2. Add **`SCOPE.DC-DATA.READ`** and **`SCOPE.DC-DATA.WRITE`**
+3. These are required for the Data Collection extension and the widget to access the CMS
+
+This is a one-time step per app, not per site.
+
 ## Setup (per site)
 
 1. Create a members-only page called `/membership-directory-profile` in the Editor
 2. Add the **Member Profile Form** widget from your app to that page
 3. Create a public `/members` page with a repeater connected to the `@jameslaymusic/membership-directory/members` collection, filtered by `published: true`
 4. In **Settings → Member Access → Login & Registration**, set the post-login redirect URL to `/membership-directory-profile`
+
+Initial setup can be verified in the Wix Dashboard → Content Manager — look for the `@jameslaymusic/membership-directory/members` collection.
 
 ## Commands
 
