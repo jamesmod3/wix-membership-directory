@@ -24,3 +24,8 @@ npm-debug.log*
 .DS_Store
 .idea/
 out
+
+# playwright artifacts
+.playwright-cli/
+.playwright/
+.claude/
