@@ -1,11 +1,14 @@
 import type { APIRoute } from 'astro';
 import { items } from '@wix/data';
+import { auth } from '@wix/essentials';
 
 const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
+const elevatedItems = auth.elevate(items);
+
 export const GET: APIRoute = async () => {
   try {
-    const result = await items.query(COLLECTION_ID)
+    const result = await elevatedItems.query(COLLECTION_ID)
       .descending('_createdDate')
       .find();
 
@@ -37,7 +40,7 @@ export const PUT: APIRoute = async ({ request }) => {
       });
     }
 
-    const result = await items.update(COLLECTION_ID, { _id, ...data });
+    const result = await elevatedItems.update(COLLECTION_ID, { _id, ...data });
 
     return new Response(JSON.stringify({ item: result }), {
       status: 200,
@@ -64,7 +67,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       });
     }
 
-    await items.remove(COLLECTION_ID, id);
+    await elevatedItems.remove(COLLECTION_ID, id);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
