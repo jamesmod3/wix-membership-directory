@@ -1,13 +1,11 @@
 import type { APIRoute } from 'astro';
 import { items } from '@wix/data';
-import { auth } from '@wix/essentials';
 
 const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 export const GET: APIRoute = async () => {
   try {
-    const elevatedQuery = auth.elevate(items.query);
-    const result = await elevatedQuery(COLLECTION_ID)
+    const result = await items.query(COLLECTION_ID)
       .descending('_createdDate')
       .find();
 
@@ -16,7 +14,11 @@ export const GET: APIRoute = async () => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || 'Failed to fetch members' }), {
+    console.error('GET /api/members error:', error);
+    return new Response(JSON.stringify({
+      error: error.message || 'Failed to fetch members',
+      details: error.details || {},
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -35,14 +37,14 @@ export const PUT: APIRoute = async ({ request }) => {
       });
     }
 
-    const elevatedUpdate = auth.elevate(items.update);
-    const result = await elevatedUpdate(COLLECTION_ID, { _id, ...data });
+    const result = await items.update(COLLECTION_ID, { _id, ...data });
 
     return new Response(JSON.stringify({ item: result }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
+    console.error('PUT /api/members error:', error);
     return new Response(JSON.stringify({ error: error.message || 'Failed to update member' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -62,14 +64,14 @@ export const DELETE: APIRoute = async ({ request }) => {
       });
     }
 
-    const elevatedRemove = auth.elevate(items.remove);
-    await elevatedRemove(COLLECTION_ID, id);
+    await items.remove(COLLECTION_ID, id);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: any) {
+    console.error('DELETE /api/members error:', error);
     return new Response(JSON.stringify({ error: error.message || 'Failed to delete member' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
