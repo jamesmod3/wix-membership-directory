@@ -3,6 +3,8 @@ import { authentication } from '@wix/site';
 import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
 
+const PROFILE_PATH = '/membership-directory-profile';
+
 class MemberProfileForm extends HTMLElement {
   static get observedAttributes() {
     return [];
@@ -16,32 +18,34 @@ class MemberProfileForm extends HTMLElement {
   }
 
   async connectedCallback() {
+    const viewMode = await wixWindow.viewMode();
+    this.store = createDataStore(viewMode === 'Editor');
+
+    if (viewMode !== 'Editor' && window.location.pathname !== PROFILE_PATH) {
+      this.style.display = 'none';
+      const REDIRECTED_KEY = 'membership-directory-redirected';
+      if (!sessionStorage.getItem(REDIRECTED_KEY)) {
+        authentication.onLogin(async () => {
+          sessionStorage.setItem(REDIRECTED_KEY, 'true');
+          if (window.location.pathname === PROFILE_PATH) return;
+          try {
+            const result = await this.store!.queryMyProfile();
+            if (result.items.length > 0) return;
+          } catch {}
+          window.location.href = PROFILE_PATH;
+        });
+      }
+      return;
+    }
+
     await this.init();
   }
 
   attributeChangedCallback() {}
 
   async init() {
-    const viewMode = await wixWindow.viewMode();
-    this.store = createDataStore(viewMode === 'Editor');
-
-    if (viewMode !== 'Editor') {
-      const REDIRECTED_KEY = 'membership-directory-redirected';
-      if (!sessionStorage.getItem(REDIRECTED_KEY)) {
-        authentication.onLogin(async () => {
-          sessionStorage.setItem(REDIRECTED_KEY, 'true');
-          if (window.location.pathname === '/membership-directory-profile') return;
-          try {
-            const result = await this.store!.queryMyProfile();
-            if (result.items.length > 0) return;
-          } catch {}
-          window.location.href = '/membership-directory-profile';
-        });
-      }
-    }
-
     try {
-      const result = await this.store.queryMyProfile();
+      const result = await this.store!.queryMyProfile();
       if (result.items.length > 0) {
         const item = result.items[0];
         this.existingItemId = item._id;
