@@ -18,28 +18,34 @@ class MemberProfileForm extends HTMLElement {
   }
 
   async connectedCallback() {
-    const viewMode = await wixWindow.viewMode();
-    this.store = createDataStore(viewMode === 'Editor');
+    try {
+      console.log('[Member Profile Widget] connectedCallback', window.location.pathname);
+      const viewMode = await wixWindow.viewMode();
+      console.log('[Member Profile Widget] viewMode:', viewMode);
+      this.store = createDataStore(viewMode === 'Editor');
 
-    if (viewMode !== 'Editor' && window.location.pathname !== PROFILE_PATH) {
-      console.log('[Member Profile Widget] Loaded on', window.location.pathname, '— registering onLogin');
-      this.style.display = 'none';
-      const REDIRECTED_KEY = 'membership-directory-redirected';
-      if (!sessionStorage.getItem(REDIRECTED_KEY)) {
-        authentication.onLogin(async () => {
-          sessionStorage.setItem(REDIRECTED_KEY, 'true');
-          if (window.location.pathname === PROFILE_PATH) return;
-          try {
-            const result = await this.store!.queryMyProfile();
-            if (result.items.length > 0) return;
-          } catch {}
-          window.location.href = PROFILE_PATH;
-        });
+      if (viewMode !== 'Editor' && window.location.pathname !== PROFILE_PATH) {
+        console.log('[Member Profile Widget] Registering onLogin handler');
+        this.style.display = 'none';
+        const REDIRECTED_KEY = 'membership-directory-redirected';
+        if (!sessionStorage.getItem(REDIRECTED_KEY)) {
+          authentication.onLogin(async () => {
+            sessionStorage.setItem(REDIRECTED_KEY, 'true');
+            if (window.location.pathname === PROFILE_PATH) return;
+            try {
+              const result = await this.store!.queryMyProfile();
+              if (result.items.length > 0) return;
+            } catch {}
+            window.location.href = PROFILE_PATH;
+          });
+        }
+        return;
       }
-      return;
-    }
 
-    await this.init();
+      await this.init();
+    } catch (err) {
+      console.error('[Member Profile Widget] Error:', err);
+    }
   }
 
   attributeChangedCallback() {}
