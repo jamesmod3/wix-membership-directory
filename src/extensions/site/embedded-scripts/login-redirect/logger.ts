@@ -1,19 +1,18 @@
 import { authentication } from '@wix/site';
+import { items } from '@wix/data';
 
+const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 const TARGET_URL = '/membership-directory-profile';
-const REDIRECTED_KEY = 'membership-directory-redirected';
 
-function alreadyRedirected(): boolean {
-  return sessionStorage.getItem(REDIRECTED_KEY) === 'true';
-}
-
-function markRedirected() {
-  sessionStorage.setItem(REDIRECTED_KEY, 'true');
-}
-
-authentication.onLogin(() => {
-  if (alreadyRedirected()) return;
-  if (window.location.pathname === TARGET_URL) return;
-  markRedirected();
+async function handleLogin() {
+  await new Promise(r => setTimeout(r, 1000));
+  try {
+    const result = await items.query(COLLECTION_ID).limit(1).find();
+    if (result.items.length > 0) return;
+  } catch {
+    return;
+  }
   window.location.href = TARGET_URL;
-});
+}
+
+authentication.onLogin(handleLogin);
