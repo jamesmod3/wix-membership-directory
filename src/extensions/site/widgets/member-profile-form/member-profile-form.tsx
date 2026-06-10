@@ -22,6 +22,7 @@ class MemberProfileForm extends HTMLElement {
     this.store = createDataStore(viewMode === 'Editor');
 
     if (viewMode !== 'Editor' && window.location.pathname !== PROFILE_PATH) {
+      console.log('[Member Profile Widget] Loaded on', window.location.pathname, '— registering onLogin');
       this.style.display = 'none';
       const REDIRECTED_KEY = 'membership-directory-redirected';
       if (!sessionStorage.getItem(REDIRECTED_KEY)) {
