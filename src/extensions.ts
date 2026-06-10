@@ -5,5 +5,7 @@ import memberProfileForm from './extensions/site/widgets/member-profile-form/mem
 
 import dataCollections from './extensions/backend/data-collections/data-collections.extension.ts';
 
+import loginRedirect from './extensions/site/embedded-scripts/login-redirect/login-redirect.extension.ts';
+
 export default app()
-  .use(myPage).use(memberProfileForm).use(dataCollections);
+  .use(myPage).use(memberProfileForm).use(dataCollections).use(loginRedirect);
