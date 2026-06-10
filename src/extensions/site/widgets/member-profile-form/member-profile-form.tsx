@@ -1,4 +1,5 @@
 import { window as wixWindow } from '@wix/site-window';
+import { authentication } from '@wix/site';
 import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
 
@@ -23,6 +24,21 @@ class MemberProfileForm extends HTMLElement {
   async init() {
     const viewMode = await wixWindow.viewMode();
     this.store = createDataStore(viewMode === 'Editor');
+
+    if (viewMode !== 'Editor') {
+      const REDIRECTED_KEY = 'membership-directory-redirected';
+      if (!sessionStorage.getItem(REDIRECTED_KEY)) {
+        authentication.onLogin(async () => {
+          sessionStorage.setItem(REDIRECTED_KEY, 'true');
+          if (window.location.pathname === '/membership-directory-profile') return;
+          try {
+            const result = await this.store!.queryMyProfile();
+            if (result.items.length > 0) return;
+          } catch {}
+          window.location.href = '/membership-directory-profile';
+        });
+      }
+    }
 
     try {
       const result = await this.store.queryMyProfile();
