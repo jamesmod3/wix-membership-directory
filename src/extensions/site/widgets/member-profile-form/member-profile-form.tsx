@@ -1,7 +1,15 @@
 import { window as wixWindow } from '@wix/site-window';
 import { members } from '@wix/members';
 import { createDataStore, type DataStore } from './data-store';
+import { detectPlan, type PlanType, type PlanConfig } from './plan-detect';
 import styles from './member-profile-form.module.css';
+
+const CATEGORIES = [
+  'Photographer', 'Videographer', 'Painter', 'Musician', 'Baker',
+  'Florist', 'Caterer', 'Decorator', 'Officiant', 'DJ',
+  'Hair & Makeup', 'Gown & Attire', 'Venue', 'Event Coordinator',
+  'Rentals', 'Transportation', 'Other',
+];
 
 class MemberProfileForm extends HTMLElement {
   static get observedAttributes() {
@@ -11,6 +19,7 @@ class MemberProfileForm extends HTMLElement {
   private store: DataStore | null = null;
   private memberId: string | null = null;
   private existingItemId: string | null = null;
+  private planConfig: PlanConfig = { planType: 'none', descriptionLabel: 'Description / Bio', wordLimit: 300, imageLabel: 'Image URL' };
 
   constructor() {
     super();
@@ -38,6 +47,9 @@ class MemberProfileForm extends HTMLElement {
       this.renderForm(null);
       return;
     }
+
+    this.planConfig = await detectPlan();
+    console.log('[Member Profile] Plan config:', this.planConfig);
 
     try {
       const result = await this.store.queryByMemberId(this.memberId);
@@ -68,46 +80,117 @@ class MemberProfileForm extends HTMLElement {
 
   renderForm(data: any | null) {
     const isEdit = !!data;
+    const p = this.planConfig;
+    const isOrg = p.planType === 'organization';
+    const isBiz = p.planType === 'business';
+    const isIndiv = p.planType === 'individual';
+
+    const selectedCategories = data?.categories ? data.categories.split(',').map((c: string) => c.trim()) : [];
+
+    const categoriesHtml = CATEGORIES.map(cat => `
+      <label class="${styles.checkboxLabel}">
+        <input type="checkbox" name="categories" value="${this.esc(cat)}" ${selectedCategories.includes(cat) ? 'checked' : ''} />
+        ${this.esc(cat)}
+      </label>
+    `).join('');
+
     this.innerHTML = `
       <div class="${styles.root}">
-        <h2 class="${styles.heading}">${isEdit ? 'Edit Your Profile' : 'Create Your Member Profile'}</h2>
+        <h2 class="${styles.heading}">${isEdit ? 'Edit Your Profile' : 'Create Your Profile'}</h2>
         <form id="member-form" class="${styles.form}">
-          <label class="${styles.label}">
-            Business Name
-            <input type="text" name="businessName" value="${this.esc(data?.businessName || '')}" class="${styles.input}" placeholder="Your business or organization name" />
-          </label>
-          <label class="${styles.label}">
-            Full Name <span class="${styles.required}">*</span>
-            <input type="text" name="name" value="${this.esc(data?.name || '')}" required class="${styles.input}" />
-          </label>
-          <label class="${styles.label}">
-            Title / Role
-            <input type="text" name="title" value="${this.esc(data?.title || '')}" class="${styles.input}" placeholder="e.g. Board Member, Volunteer" />
-          </label>
-          <label class="${styles.label}">
-            Biography
-            <textarea name="bio" rows="4" class="${styles.textarea}">${this.esc(data?.bio || '')}</textarea>
-          </label>
-          <label class="${styles.label}">
-            Photo URL
-            <input type="url" name="photo" value="${this.esc(data?.photo || '')}" class="${styles.input}" placeholder="https://example.com/photo.jpg" />
-          </label>
-          <label class="${styles.label}">
-            Email
-            <input type="email" name="email" value="${this.esc(data?.email || '')}" class="${styles.input}" />
-          </label>
-          <label class="${styles.label}">
-            Phone
-            <input type="tel" name="phone" value="${this.esc(data?.phone || '')}" class="${styles.input}" />
-          </label>
-          <label class="${styles.label}">
-            Website
-            <input type="url" name="website" value="${this.esc(data?.website || '')}" class="${styles.input}" />
-          </label>
-          <label class="${styles.label}">
-            Social Links (one per line)
-            <textarea name="socialLinks" rows="3" class="${styles.textarea}" placeholder="https://facebook.com/your-profile&#10;https://instagram.com/your-profile">${this.esc(data?.socialLinks || '')}</textarea>
-          </label>
+          <fieldset class="${styles.fieldset}">
+            <legend class="${styles.legend}">Contact Information</legend>
+
+            ${isOrg || isBiz ? `
+            <label class="${styles.label}">
+              Organization Name <span class="${styles.required}">*</span>
+              <input type="text" name="organizationName" value="${this.esc(data?.organizationName || '')}" required class="${styles.input}" placeholder="Your organization or business name" />
+            </label>
+            ` : `
+            <label class="${styles.label}">
+              Organization Name
+              <input type="text" name="organizationName" value="${this.esc(data?.organizationName || '')}" class="${styles.input}" placeholder="Optional for individual plans" />
+            </label>
+            `}
+
+            <label class="${styles.label}">
+              Contact First Name <span class="${styles.required}">*</span>
+              <input type="text" name="name" value="${this.esc(data?.name || '')}" required class="${styles.input}" />
+            </label>
+
+            <label class="${styles.label}">
+              Contact Last Name <span class="${styles.required}">*</span>
+              <input type="text" name="lastName" value="${this.esc(data?.lastName || '')}" required class="${styles.input}" />
+            </label>
+
+            <label class="${styles.label}">
+              Pronouns
+              <input type="text" name="pronouns" value="${this.esc(data?.pronouns || '')}" class="${styles.input}" placeholder="e.g. she/her, he/him, they/them" />
+            </label>
+
+            <label class="${styles.label}">
+              Email <span class="${styles.required}">*</span>
+              <input type="email" name="email" value="${this.esc(data?.email || '')}" required class="${styles.input}" />
+            </label>
+
+            <label class="${styles.label}">
+              Phone
+              <input type="tel" name="phone" value="${this.esc(data?.phone || '')}" class="${styles.input}" />
+            </label>
+
+            <label class="${styles.label}">
+              Address
+              <input type="text" name="address" value="${this.esc(data?.address || '')}" class="${styles.input}" placeholder="Street, City, State" />
+            </label>
+          </fieldset>
+
+          <fieldset class="${styles.fieldset}">
+            <legend class="${styles.legend}">Listing Details</legend>
+
+            <label class="${styles.label}">
+              Categories (up to 4)
+            </label>
+            <div class="${styles.checkboxGroup}">
+              ${categoriesHtml}
+            </div>
+
+            <label class="${styles.label}">
+              Listing Title <span class="${styles.required}">*</span>
+              <input type="text" name="listingTitle" value="${this.esc(data?.listingTitle || '')}" required class="${styles.input}" placeholder="Your headline for the directory" />
+            </label>
+
+            <label class="${styles.label}">
+              ${this.esc(p.descriptionLabel)} (max ${p.wordLimit} words)
+              <textarea name="bio" rows="4" class="${styles.textarea}" oninput="this.dataset.wordCount = this.value.trim() ? this.value.trim().split(/\\s+/).length : 0">${this.esc(data?.bio || '')}</textarea>
+              <span class="${styles.wordCount}">0 / ${p.wordLimit} words</span>
+            </label>
+
+            <label class="${styles.label}">
+              Website
+              <input type="url" name="website" value="${this.esc(data?.website || '')}" class="${styles.input}" placeholder="https://example.com" />
+            </label>
+
+            <label class="${styles.label}">
+              Facebook
+              <input type="url" name="facebook" value="${this.esc(data?.facebook || '')}" class="${styles.input}" placeholder="https://facebook.com/your-page" />
+            </label>
+
+            <label class="${styles.label}">
+              Instagram
+              <input type="url" name="instagram" value="${this.esc(data?.instagram || '')}" class="${styles.input}" placeholder="https://instagram.com/your-profile" />
+            </label>
+
+            <label class="${styles.label}">
+              LinkedIn
+              <input type="url" name="linkedin" value="${this.esc(data?.linkedin || '')}" class="${styles.input}" placeholder="https://linkedin.com/in/your-profile" />
+            </label>
+
+            <label class="${styles.label}">
+              ${this.esc(p.imageLabel)} URL
+              <input type="url" name="photo" value="${this.esc(data?.photo || '')}" class="${styles.input}" placeholder="https://example.com/image.jpg" />
+            </label>
+          </fieldset>
+
           <button type="submit" class="${styles.button}">${isEdit ? 'Update Profile' : 'Submit Profile'}</button>
         </form>
         <div id="form-message" class="${styles.message}"></div>
@@ -115,6 +198,17 @@ class MemberProfileForm extends HTMLElement {
     `;
 
     this.querySelector('#member-form')!.addEventListener('submit', (e) => this.handleSubmit(e));
+
+    const bioField = this.querySelector('textarea[name="bio"]') as HTMLTextAreaElement;
+    if (bioField) {
+      bioField.addEventListener('input', () => {
+        const count = bioField.value.trim() ? bioField.value.trim().split(/\s+/).length : 0;
+        const wcEl = this.querySelector('.' + styles.wordCount.split(' ')[0]) as HTMLElement;
+        if (wcEl) {
+          wcEl.textContent = `${count} / ${p.wordLimit} words`;
+        }
+      });
+    }
   }
 
   async handleSubmit(event: Event) {
@@ -122,18 +216,27 @@ class MemberProfileForm extends HTMLElement {
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
+    const categories = formData.getAll('categories') as string[];
+
     const profileData: Record<string, any> = {
       memberId: this.memberId,
+      planType: this.planConfig.planType,
       published: true,
-      businessName: (formData.get('businessName') as string).trim(),
+      organizationName: (formData.get('organizationName') as string).trim(),
       name: (formData.get('name') as string).trim(),
-      title: (formData.get('title') as string).trim(),
-      bio: (formData.get('bio') as string).trim(),
-      photo: (formData.get('photo') as string).trim(),
+      lastName: (formData.get('lastName') as string).trim(),
+      pronouns: (formData.get('pronouns') as string).trim(),
       email: (formData.get('email') as string).trim().toLowerCase(),
       phone: (formData.get('phone') as string).trim(),
+      address: (formData.get('address') as string).trim(),
+      categories: categories.join(', '),
+      listingTitle: (formData.get('listingTitle') as string).trim(),
+      bio: (formData.get('bio') as string).trim(),
       website: (formData.get('website') as string).trim(),
-      socialLinks: (formData.get('socialLinks') as string).trim(),
+      facebook: (formData.get('facebook') as string).trim(),
+      instagram: (formData.get('instagram') as string).trim(),
+      linkedin: (formData.get('linkedin') as string).trim(),
+      photo: (formData.get('photo') as string).trim(),
     };
 
     const submitBtn = form.querySelector('button')!;
