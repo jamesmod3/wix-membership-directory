@@ -54,9 +54,7 @@ const DashboardPage: FC = () => {
                   <Text size="small" secondary>
                     ☐ Create a members-only page (/membership-directory-profile) and add the widget
                   </Text>
-                  <Text size="small" secondary>
-                    ☐ Set post-login redirect to /membership-directory-profile
-                  </Text>
+
                   <Text size="small" secondary>
                     ☐ Create a public /members page with a repeater connected to the collection
                   </Text>

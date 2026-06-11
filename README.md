@@ -49,10 +49,9 @@ Create a members-only page called `/membership-directory-profile` in the Editor.
 Create a public `/members` page with a repeater connected to the `@jameslaymusic/membership-directory/members` collection, filtered by `published: true`.
 
 ### 3. Getting members to the form
-Members are motivated (they paid) but they still need to find the form. Options:
+Members are motivated (they paid) but they still need to find the form:
 
-- **Post-signup redirect** (production only): After `npm run release`, the embedded script auto-redirects new members to `/membership-directory-profile` using `onLogin`. Not available in preview.
-- **Site navigation**: Add a "My Profile" link in the site's main menu pointing to `/membership-directory-profile`. Works for all members at all times.
+- **Site navigation**: Add a "My Profile" link in the site's main menu pointing to `/membership-directory-profile`.
 - **Welcome email**: Send new members a direct link to the profile page as part of the onboarding flow.
 
 Initial setup can be verified in the Wix Dashboard → Content Manager — look for the `@jameslaymusic/membership-directory/members` collection.
