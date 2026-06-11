@@ -1,5 +1,5 @@
 interface DataStore {
-  queryByEmail(email: string): Promise<{ items: any[] }>
+  queryByMemberId(memberId: string): Promise<{ items: any[] }>
   insert(data: Record<string, any>): Promise<any>
   update(id: string, data: Record<string, any>): Promise<any>
 }
@@ -7,9 +7,9 @@ interface DataStore {
 const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 function makeWixStore(): DataStore {
-  async function queryByEmail(email: string) {
+  async function queryByMemberId(memberId: string) {
     const { items } = await import('@wix/data');
-    return items.query(COLLECTION_ID).eq('email', email).limit(1).find();
+    return items.query(COLLECTION_ID).eq('memberId', memberId).limit(1).find();
   }
 
   async function insert(data: Record<string, any>) {
@@ -22,11 +22,21 @@ function makeWixStore(): DataStore {
     return items.update(COLLECTION_ID, { _id: id, ...data });
   }
 
-  return { queryByEmail, insert, update };
+  return { queryByMemberId, insert, update };
 }
 
 function makeLocalStore(): DataStore {
   const STORAGE_KEY = 'membership-directory-profiles';
+  const MEMBER_KEY = 'membership-directory-member-id';
+
+  function getLocalMemberId(): string {
+    let id = localStorage.getItem(MEMBER_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(MEMBER_KEY, id);
+    }
+    return id;
+  }
 
   function readAll(): any[] {
     try {
@@ -44,9 +54,9 @@ function makeLocalStore(): DataStore {
     return crypto.randomUUID();
   }
 
-  async function queryByEmail(email: string) {
+  async function queryByMemberId(memberId: string) {
     const profiles = readAll();
-    const items = profiles.filter(p => p.email?.toLowerCase() === email.toLowerCase());
+    const items = profiles.filter(p => p.memberId === memberId);
     return { items };
   }
 
@@ -67,7 +77,7 @@ function makeLocalStore(): DataStore {
     return profiles[idx];
   }
 
-  return { queryByEmail, insert, update };
+  return { queryByMemberId, insert, update };
 }
 
 export function createDataStore(isEditor: boolean): DataStore {

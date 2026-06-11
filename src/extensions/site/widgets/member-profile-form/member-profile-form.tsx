@@ -1,4 +1,5 @@
 import { window as wixWindow } from '@wix/site-window';
+import { members } from '@wix/members';
 import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
 
@@ -8,6 +9,7 @@ class MemberProfileForm extends HTMLElement {
   }
 
   private store: DataStore | null = null;
+  private memberId: string | null = null;
   private existingItemId: string | null = null;
 
   constructor() {
@@ -23,7 +25,30 @@ class MemberProfileForm extends HTMLElement {
       return;
     }
 
-    this.renderForm(null);
+    try {
+      const response = await members.getCurrentMember();
+      this.memberId = response.member?._id ?? null;
+    } catch (e) {
+      console.error('[Member Profile] Failed to get member ID:', e);
+    }
+
+    if (!this.memberId) {
+      this.renderForm(null);
+      return;
+    }
+
+    try {
+      const result = await this.store.queryByMemberId(this.memberId);
+      if (result.items.length > 0) {
+        const item = result.items[0];
+        this.existingItemId = item._id;
+        this.renderForm(item);
+      } else {
+        this.renderForm(null);
+      }
+    } catch {
+      this.renderForm(null);
+    }
   }
 
   attributeChangedCallback() {}
@@ -64,9 +89,8 @@ class MemberProfileForm extends HTMLElement {
             <input type="url" name="photo" value="${this.esc(data?.photo || '')}" class="${styles.input}" placeholder="https://example.com/photo.jpg" />
           </label>
           <label class="${styles.label}">
-            Email <span class="${styles.required}">*</span>
-            <input type="email" name="email" value="${this.esc(data?.email || '')}" required class="${styles.input}" />
-            <small style="color:#666;">Use the same email each time to edit your profile later.</small>
+            Email
+            <input type="email" name="email" value="${this.esc(data?.email || '')}" class="${styles.input}" />
           </label>
           <label class="${styles.label}">
             Phone
@@ -94,14 +118,14 @@ class MemberProfileForm extends HTMLElement {
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const email = (formData.get('email') as string).trim().toLowerCase();
     const profileData: Record<string, any> = {
+      memberId: this.memberId,
       businessName: (formData.get('businessName') as string).trim(),
       name: (formData.get('name') as string).trim(),
       title: (formData.get('title') as string).trim(),
       bio: (formData.get('bio') as string).trim(),
       photo: (formData.get('photo') as string).trim(),
-      email,
+      email: (formData.get('email') as string).trim().toLowerCase(),
       phone: (formData.get('phone') as string).trim(),
       website: (formData.get('website') as string).trim(),
       socialLinks: (formData.get('socialLinks') as string).trim(),
@@ -109,19 +133,11 @@ class MemberProfileForm extends HTMLElement {
 
     const submitBtn = form.querySelector('button')!;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Checking...';
+    submitBtn.textContent = 'Saving...';
 
     try {
-      const existing = await this.store!.queryByEmail(email);
-      const isEdit = existing.items.length > 0;
-
-      submitBtn.textContent = 'Saving...';
-
-      if (isEdit) {
-        const itemId = existing.items[0]._id;
-        if (!itemId) throw new Error('Item has no _id');
-        this.existingItemId = itemId;
-        await this.store!.update(itemId, profileData);
+      if (this.existingItemId) {
+        await this.store!.update(this.existingItemId, profileData);
       } else {
         await this.store!.insert({
           ...profileData,
@@ -129,8 +145,8 @@ class MemberProfileForm extends HTMLElement {
         });
       }
 
-      this.showMessage(isEdit ? 'Profile updated!' : 'Profile created!', 'success');
-      submitBtn.textContent = isEdit ? 'Update Profile' : 'Submitted';
+      this.showMessage(this.existingItemId ? 'Profile updated!' : 'Profile created!', 'success');
+      submitBtn.textContent = this.existingItemId ? 'Update Profile' : 'Submitted';
       submitBtn.disabled = false;
     } catch (error) {
       console.error('Failed to save profile:', error);

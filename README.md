@@ -36,9 +36,7 @@ Before deploying to any site, the app must have these scopes enabled:
 |---|---|
 | `SCOPE.DC-DATA.READ` | Reading CMS collections (directory widget) |
 | `SCOPE.DC-DATA.WRITE` | Writing to CMS collections (profile form) |
-| `WIX_MEMBERS.READ_MEMBER` (recommended) | Identifying members — enables one-profile-per-member enforcement |
-
-Without `WIX_MEMBERS.READ_MEMBER`, duplicate detection relies on email uniqueness (same email = same profile). Members using different emails could create multiple entries. Admins can clean up duplicates in Content Manager.
+| `WIX_MEMBERS.READ_MEMBER` | Identifying members — enables one-profile-per-member enforcement via `memberId` |
 
 ## Setup (per site)
 
