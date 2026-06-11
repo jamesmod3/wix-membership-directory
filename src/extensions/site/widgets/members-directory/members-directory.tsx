@@ -2,7 +2,7 @@ import { items } from '@wix/data';
 import { window as wixWindow } from '@wix/site-window';
 import styles from './members-directory.module.css';
 
-const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
+const DEFAULT_COLLECTION = '@jameslaymusic/membership-directory/members';
 
 interface Member {
   _id: string
@@ -19,7 +19,7 @@ interface Member {
 
 class MembersDirectory extends HTMLElement {
   static get observedAttributes() {
-    return [];
+    return ['collection-id'];
   }
 
   constructor() {
@@ -28,6 +28,7 @@ class MembersDirectory extends HTMLElement {
 
   async connectedCallback() {
     const viewMode = await wixWindow.viewMode();
+    console.log('[Members Directory] viewMode:', viewMode);
 
     if (viewMode === 'Editor') {
       this.renderEditorPlaceholder();
@@ -38,7 +39,9 @@ class MembersDirectory extends HTMLElement {
     await this.fetchMembers();
   }
 
-  attributeChangedCallback() {}
+  attributeChangedCallback() {
+    // re-fetch if collection-id changes
+  }
 
   renderEditorPlaceholder() {
     this.innerHTML = `
@@ -61,14 +64,18 @@ class MembersDirectory extends HTMLElement {
   }
 
   async fetchMembers() {
+    const collectionId = this.getAttribute('collection-id') || DEFAULT_COLLECTION;
+    console.log('[Members Directory] querying collection:', collectionId);
+
     try {
-      const result = await items.query(COLLECTION_ID)
+      const result = await items.query(collectionId)
         .eq('published', true)
         .descending('_createdDate')
         .find();
 
       const container = this.querySelector('#directory-content')!;
       const members = result.items as Member[];
+      console.log('[Members Directory] found:', members.length, 'items');
 
       if (members.length === 0) {
         container.innerHTML = `<div class="${styles.empty}">No members yet.</div>`;
@@ -80,8 +87,8 @@ class MembersDirectory extends HTMLElement {
           ${members.map(m => this.renderCard(m)).join('')}
         </div>
       `;
-    } catch (error) {
-      console.error('Failed to load members:', error);
+    } catch (error: any) {
+      console.error('[Members Directory] query failed:', error.message);
       const container = this.querySelector('#directory-content')!;
       container.innerHTML = `<div class="${styles.empty}">Failed to load members.</div>`;
     }
