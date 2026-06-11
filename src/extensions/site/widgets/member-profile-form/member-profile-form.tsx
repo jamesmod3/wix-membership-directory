@@ -1,5 +1,4 @@
 import { window as wixWindow } from '@wix/site-window';
-import { members } from '@wix/members';
 import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
 
@@ -22,13 +21,6 @@ class MemberProfileForm extends HTMLElement {
     if (viewMode === 'Editor') {
       this.renderEditorPlaceholder();
       return;
-    }
-
-    try {
-      const r = await members.getCurrentMember();
-      console.log('[Member Profile Widget] getCurrentMember:', r.member?._id);
-    } catch (e: any) {
-      console.log('[Member Profile Widget] getCurrentMember failed:', e.message, e.details?.applicationError?.code);
     }
 
     this.renderForm(null);

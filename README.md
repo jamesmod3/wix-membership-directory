@@ -27,13 +27,18 @@ A new **members-only form** (custom element widget) that submits directly to a C
 
 ## Pre-deploy: Dev Center Permissions
 
-Before deploying to any site, the app must have DC-DATA scopes enabled:
+Before deploying to any site, the app must have these scopes enabled:
 
 1. Go to [Wix Dev Center](https://manage.wix.com/studio/custom-apps/) → select this app → **Develop → Permissions**
-2. Add **`SCOPE.DC-DATA.READ`** and **`SCOPE.DC-DATA.WRITE`**
-3. These are required for the Data Collection extension and the widget to access the CMS
+2. Add these scopes:
 
-This is a one-time step per app, not per site.
+| Scope | Required for |
+|---|---|
+| `SCOPE.DC-DATA.READ` | Reading CMS collections (directory widget) |
+| `SCOPE.DC-DATA.WRITE` | Writing to CMS collections (profile form) |
+| `WIX_MEMBERS.READ_MEMBER` (recommended) | Identifying members — enables one-profile-per-member enforcement |
+
+Without `WIX_MEMBERS.READ_MEMBER`, duplicate detection relies on email uniqueness (same email = same profile). Members using different emails could create multiple entries. Admins can clean up duplicates in Content Manager.
 
 ## Setup (per site)
 
