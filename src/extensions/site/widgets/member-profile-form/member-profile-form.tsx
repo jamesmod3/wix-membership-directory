@@ -28,17 +28,20 @@ class MemberProfileForm extends HTMLElement {
     try {
       const response = await members.getCurrentMember();
       this.memberId = response.member?._id ?? null;
-    } catch (e) {
-      console.error('[Member Profile] Failed to get member ID:', e);
+      console.log('[Member Profile] Member ID:', this.memberId);
+    } catch (e: any) {
+      console.log('[Member Profile] getCurrentMember failed:', e.details?.applicationError?.code || e.message);
     }
 
     if (!this.memberId) {
+      console.log('[Member Profile] No member ID, showing blank form');
       this.renderForm(null);
       return;
     }
 
     try {
       const result = await this.store.queryByMemberId(this.memberId);
+      console.log('[Member Profile] Existing profile:', result.items.length > 0 ? 'found' : 'none');
       if (result.items.length > 0) {
         const item = result.items[0];
         this.existingItemId = item._id;
@@ -47,6 +50,7 @@ class MemberProfileForm extends HTMLElement {
         this.renderForm(null);
       }
     } catch {
+      console.log('[Member Profile] Query failed, showing blank form');
       this.renderForm(null);
     }
   }
