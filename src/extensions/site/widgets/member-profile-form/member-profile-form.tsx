@@ -124,6 +124,7 @@ class MemberProfileForm extends HTMLElement {
 
     const profileData: Record<string, any> = {
       memberId: this.memberId,
+      published: true,
       businessName: (formData.get('businessName') as string).trim(),
       name: (formData.get('name') as string).trim(),
       title: (formData.get('title') as string).trim(),
