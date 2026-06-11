@@ -1,9 +1,6 @@
 import { window as wixWindow } from '@wix/site-window';
-import { authentication } from '@wix/site';
 import { createDataStore, type DataStore } from './data-store';
 import styles from './member-profile-form.module.css';
-
-const PROFILE_PATH = '/membership-directory-profile';
 
 class MemberProfileForm extends HTMLElement {
   static get observedAttributes() {
@@ -18,57 +15,30 @@ class MemberProfileForm extends HTMLElement {
   }
 
   async connectedCallback() {
-    try {
-      console.log('[Member Profile Widget] connectedCallback', window.location.pathname);
-      const viewMode = await wixWindow.viewMode();
-      console.log('[Member Profile Widget] viewMode:', viewMode);
-      this.store = createDataStore(viewMode === 'Editor');
+    const viewMode = await wixWindow.viewMode();
+    this.store = createDataStore(viewMode === 'Editor');
 
-      if (viewMode !== 'Editor' && window.location.pathname !== PROFILE_PATH) {
-        console.log('[Member Profile Widget] Registering onLogin handler');
-        this.style.display = 'none';
-        const REDIRECTED_KEY = 'membership-directory-redirected';
-        if (!sessionStorage.getItem(REDIRECTED_KEY)) {
-          authentication.onLogin(async () => {
-            sessionStorage.setItem(REDIRECTED_KEY, 'true');
-            if (window.location.pathname === PROFILE_PATH) return;
-            try {
-              const result = await this.store!.queryMyProfile();
-              if (result.items.length > 0) return;
-            } catch {}
-            window.location.href = PROFILE_PATH;
-          });
-        }
-        return;
-      }
-
-      await this.init();
-    } catch (err) {
-      console.error('[Member Profile Widget] Error:', err);
+    if (viewMode === 'Editor') {
+      this.renderEditorPlaceholder();
+      return;
     }
+
+    this.renderForm(null);
   }
 
   attributeChangedCallback() {}
 
-  async init() {
-    try {
-      const result = await this.store!.queryMyProfile();
-      if (result.items.length > 0) {
-        const item = result.items[0];
-        this.existingItemId = item._id;
-        this.renderForm(item);
-      } else {
-        this.renderForm(null);
-      }
-    } catch (error) {
-      console.error('Failed to check existing profile:', error);
-      this.renderForm(null);
-    }
+  renderEditorPlaceholder() {
+    this.innerHTML = `
+      <div style="padding:40px;border:2px dashed #ccc;border-radius:8px;text-align:center;color:#999;font-family:sans-serif;">
+        <h3 style="margin:0 0 8px;">Member Profile Form</h3>
+        <p style="margin:0;font-size:14px;">Members will fill out their profile here on the live site.</p>
+      </div>
+    `;
   }
 
   renderForm(data: any | null) {
     const isEdit = !!data;
-
     this.innerHTML = `
       <div class="${styles.root}">
         <h2 class="${styles.heading}">${isEdit ? 'Edit Your Profile' : 'Create Your Member Profile'}</h2>
@@ -96,6 +66,7 @@ class MemberProfileForm extends HTMLElement {
           <label class="${styles.label}">
             Email <span class="${styles.required}">*</span>
             <input type="email" name="email" value="${this.esc(data?.email || '')}" required class="${styles.input}" />
+            <small style="color:#666;">Use the same email each time to edit your profile later.</small>
           </label>
           <label class="${styles.label}">
             Phone
@@ -123,13 +94,14 @@ class MemberProfileForm extends HTMLElement {
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
+    const email = (formData.get('email') as string).trim().toLowerCase();
     const profileData: Record<string, any> = {
       businessName: (formData.get('businessName') as string).trim(),
       name: (formData.get('name') as string).trim(),
       title: (formData.get('title') as string).trim(),
       bio: (formData.get('bio') as string).trim(),
       photo: (formData.get('photo') as string).trim(),
-      email: (formData.get('email') as string).trim().toLowerCase(),
+      email,
       phone: (formData.get('phone') as string).trim(),
       website: (formData.get('website') as string).trim(),
       socialLinks: (formData.get('socialLinks') as string).trim(),
@@ -137,11 +109,19 @@ class MemberProfileForm extends HTMLElement {
 
     const submitBtn = form.querySelector('button')!;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving...';
+    submitBtn.textContent = 'Checking...';
 
     try {
-      if (this.existingItemId) {
-        await this.store!.update(this.existingItemId, profileData);
+      const existing = await this.store!.queryByEmail(email);
+      const isEdit = existing.items.length > 0;
+
+      submitBtn.textContent = 'Saving...';
+
+      if (isEdit) {
+        const itemId = existing.items[0]._id;
+        if (!itemId) throw new Error('Item has no _id');
+        this.existingItemId = itemId;
+        await this.store!.update(itemId, profileData);
       } else {
         await this.store!.insert({
           ...profileData,
@@ -149,17 +129,14 @@ class MemberProfileForm extends HTMLElement {
         });
       }
 
-      this.showMessage(
-        this.existingItemId ? 'Profile updated!' : 'Profile created!',
-        'success'
-      );
-      submitBtn.textContent = this.existingItemId ? 'Update Profile' : 'Submitted';
+      this.showMessage(isEdit ? 'Profile updated!' : 'Profile created!', 'success');
+      submitBtn.textContent = isEdit ? 'Update Profile' : 'Submitted';
       submitBtn.disabled = false;
     } catch (error) {
       console.error('Failed to save profile:', error);
       const message = error instanceof Error ? error.message : String(error);
       this.showMessage('Failed to save profile: ' + message, 'error');
-      submitBtn.textContent = this.existingItemId ? 'Update Profile' : 'Submit Profile';
+      submitBtn.textContent = 'Submit Profile';
       submitBtn.disabled = false;
     }
   }

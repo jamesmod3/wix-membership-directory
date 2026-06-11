@@ -20,7 +20,7 @@ export default {
     { key: 'published', displayName: 'Published', type: 'BOOLEAN' },
   ],
   dataPermissions: {
-    itemRead: 'SITE_MEMBER_AUTHOR',
+    itemRead: 'ANYONE',
     itemInsert: 'SITE_MEMBER_AUTHOR',
     itemUpdate: 'SITE_MEMBER_AUTHOR',
     itemRemove: 'PRIVILEGED',
