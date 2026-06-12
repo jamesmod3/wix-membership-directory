@@ -49,7 +49,12 @@ class MemberProfileForm extends HTMLElement {
     }
 
     this.planConfig = await detectPlan();
-    console.log('[Member Profile] Plan config:', this.planConfig);
+
+    if (this.planConfig.planType === 'none') {
+      console.log('[Member Profile] No subscription, prompting purchase');
+      this.renderNoSubscription();
+      return;
+    }
 
     try {
       const result = await this.store.queryByMemberId(this.memberId);
@@ -74,6 +79,17 @@ class MemberProfileForm extends HTMLElement {
       <div style="padding:40px;border:2px dashed #ccc;border-radius:8px;text-align:center;color:#999;font-family:sans-serif;">
         <h3 style="margin:0 0 8px;">Member Profile Form</h3>
         <p style="margin:0;font-size:14px;">Members will fill out their profile here on the live site.</p>
+      </div>
+    `;
+  }
+
+  renderNoSubscription() {
+    this.innerHTML = `
+      <div class="${styles.root}" style="text-align:center;padding:3rem 1rem;">
+        <h2 class="${styles.heading}">Membership Required</h2>
+        <p style="color:#6b7280;font-size:0.9375rem;line-height:1.6;max-width:400px;margin:0 auto;">
+          Please purchase a membership plan to create your directory profile.
+        </p>
       </div>
     `;
   }
