@@ -1,5 +1,3 @@
-import { orders } from '@wix/pricing-plans';
-
 export type PlanType = 'individual' | 'business' | 'organization' | 'none';
 
 export interface PlanConfig {
@@ -24,6 +22,7 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
 
 export async function detectPlan(): Promise<PlanConfig> {
   try {
+    const { orders } = await import('@wix/pricing-plans');
     const result = await orders.memberListOrders();
     console.log('[Plan Detect] All orders:', JSON.stringify(result.orders?.map(o => ({ planName: o.planName, status: o.status, planId: o.planId }))));
     const order = result.orders?.find(o => o.status === 'ACTIVE' || o.status === 'PENDING');
