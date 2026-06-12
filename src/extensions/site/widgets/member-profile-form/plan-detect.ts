@@ -22,12 +22,13 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
 
 export async function detectPlan(): Promise<PlanConfig> {
   try {
-    const { orders } = await import('@wix/pricing-plans');
-    const result = await orders.memberListOrders();
-    console.log('[Plan Detect] All orders:', JSON.stringify(result.orders?.map(o => ({ planName: o.planName, status: o.status, planId: o.planId }))));
-    const order = result.orders?.find(o => o.status === 'ACTIVE' || o.status === 'PENDING');
+    const { httpClient } = await import('@wix/essentials');
+    const response = await httpClient.fetchWithAuth('https://www.wixapis.com/pricing-plans/v2/member/orders');
+    const data = await response.json();
+    console.log('[Plan Detect] REST response:', JSON.stringify({ status: response.status, orders: data.orders?.map((o: any) => ({ planName: o.planName, status: o.status })) }));
+    const order = data.orders?.find((o: any) => o.status === 'ACTIVE' || o.status === 'PENDING');
     if (!order) {
-      console.log('[Plan Detect] No active/pending orders found');
+      console.log('[Plan Detect] No active/pending orders from REST');
       return PLAN_CONFIGS.none;
     }
     const planName = (order.planName || '').toLowerCase().trim();
