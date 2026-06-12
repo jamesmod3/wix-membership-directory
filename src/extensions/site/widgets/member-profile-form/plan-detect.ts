@@ -24,14 +24,15 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
 
 export async function detectPlan(): Promise<PlanConfig> {
   try {
-    const result = await orders.memberListOrders({ orderStatuses: ['ACTIVE'] });
-    const order = result.orders?.[0];
+    const result = await orders.memberListOrders();
+    console.log('[Plan Detect] All orders:', JSON.stringify(result.orders?.map(o => ({ planName: o.planName, status: o.status, planId: o.planId }))));
+    const order = result.orders?.find(o => o.status === 'ACTIVE' || o.status === 'PENDING');
     if (!order) {
-      console.log('[Plan Detect] No active orders found');
+      console.log('[Plan Detect] No active/pending orders found');
       return PLAN_CONFIGS.none;
     }
     const planName = (order.planName || '').toLowerCase().trim();
-    console.log('[Plan Detect] Active order plan name:', planName);
+    console.log('[Plan Detect] Matched order plan name:', planName, 'status:', order.status);
     const planType = PLAN_MAP[planName];
     if (!planType) {
       console.log('[Plan Detect] Unknown plan:', planName);
@@ -39,7 +40,7 @@ export async function detectPlan(): Promise<PlanConfig> {
     }
     return PLAN_CONFIGS[planType];
   } catch (e: any) {
-    console.log('[Plan Detect] Failed:', e.message);
+    console.log('[Plan Detect] Failed:', e.message, e.details || '');
     return PLAN_CONFIGS.none;
   }
 }
