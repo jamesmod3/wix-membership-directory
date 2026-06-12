@@ -51,6 +51,7 @@ Members are motivated (they paid) but they still need to find the form:
 
 - **Site navigation**: Add a "My Profile" link in the site's main menu pointing to `/membership-directory-profile`.
 - **Welcome email**: Send new members a direct link to the profile page as part of the onboarding flow.
+- **Order confirmation redirect** (recommended): For each pricing plan, in the dashboard go to **Catalog → Pricing Plans → [the plan]** and enable **"Include a link in the order confirmation page"**. Set the link to `/membership-directory-profile`. This guides members to the form right after purchase.
 
 Initial setup can be verified in the Wix Dashboard → Content Manager — look for the `@jameslaymusic/membership-directory/members` collection.
 
