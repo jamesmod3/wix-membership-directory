@@ -5,10 +5,11 @@ import { detectPlan, type PlanType, type PlanConfig } from './plan-detect';
 import styles from './member-profile-form.module.css';
 
 const CATEGORIES = [
-  'Photographer', 'Videographer', 'Painter', 'Musician', 'Baker',
-  'Florist', 'Caterer', 'Decorator', 'Officiant', 'DJ',
-  'Hair & Makeup', 'Gown & Attire', 'Venue', 'Event Coordinator',
-  'Rentals', 'Transportation', 'Other',
+  'Funeral Planning', 'Burial Services', 'Cremation', 'Grief Counseling',
+  'Legal / Estate Planning', 'Financial Advising', 'Hospice', 'Palliative Care',
+  'Home Health', 'Caregiving', 'Spiritual / Chaplain', 'Celebration of Life',
+  'End-of-Life Doula', 'Advance Care Planning', 'Legacy / Memory Keeping',
+  'Other',
 ];
 
 class MemberProfileForm extends HTMLElement {
