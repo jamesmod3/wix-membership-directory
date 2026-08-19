@@ -8,13 +8,15 @@ import {
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 
+import { DIRECTORY_COLLECTION_ID } from '../../../shared/constants';
+
 const Panel: FC = () => {
   const [collectionId, setCollectionId] = useState<string>('');
 
   useEffect(() => {
     widget.getProp('collection-id')
-      .then(val => setCollectionId(val || '@jameslaymusic/membership-directory/members'))
-      .catch(() => setCollectionId('@jameslaymusic/membership-directory/members'));
+      .then(val => setCollectionId(val || DIRECTORY_COLLECTION_ID))
+      .catch(() => setCollectionId(DIRECTORY_COLLECTION_ID));
   }, []);
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

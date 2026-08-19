@@ -1,10 +1,12 @@
 import type { DataCollection } from '@wix/astro/builders';
 
-export const collectionIdSuffix = 'members';
+import { DIRECTORY_COLLECTION_SUFFIX } from '../../shared/constants';
+
+export const collectionIdSuffix = DIRECTORY_COLLECTION_SUFFIX;
 
 export default {
   idSuffix: collectionIdSuffix,
-  displayName: 'Members',
+  displayName: 'Membership Directory Entries',
   displayField: 'listingTitle',
   fields: [
     { key: 'memberId', displayName: 'Member ID', type: 'TEXT' },

@@ -2,7 +2,7 @@ import { items } from '@wix/data';
 import { window as wixWindow } from '@wix/site-window';
 import styles from './members-directory.module.css';
 
-const DEFAULT_COLLECTION = '@jameslaymusic/membership-directory/members';
+import { DIRECTORY_COLLECTION_ID as DEFAULT_COLLECTION } from '../../../shared/constants';
 
 interface Member {
   _id: string

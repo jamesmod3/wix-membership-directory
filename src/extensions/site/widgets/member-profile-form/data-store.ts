@@ -1,10 +1,10 @@
+import { DIRECTORY_COLLECTION_ID as COLLECTION_ID } from '../../../shared/constants';
+
 interface DataStore {
   queryByMemberId(memberId: string): Promise<{ items: any[] }>
   insert(data: Record<string, any>): Promise<any>
   update(id: string, data: Record<string, any>): Promise<any>
 }
-
-const COLLECTION_ID = '@jameslaymusic/membership-directory/members';
 
 function makeWixStore(): DataStore {
   async function queryByMemberId(memberId: string) {
