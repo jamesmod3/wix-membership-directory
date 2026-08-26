@@ -2,6 +2,7 @@ import { window as wixWindow } from '@wix/site-window';
 import { members } from '@wix/members';
 import { createDataStore, type DataStore } from './data-store';
 import { detectPlan, type PlanType, type PlanConfig } from './plan-detect';
+import { resolveMediaUrl } from '../../../shared/media';
 import styles from './member-profile-form.module.css';
 
 const CATEGORIES = [
@@ -204,7 +205,7 @@ class MemberProfileForm extends HTMLElement {
 
             <label class="${styles.label}">
               ${this.esc(p.imageLabel)} URL
-              <input type="url" name="photo" value="${this.esc(data?.photo || '')}" class="${styles.input}" placeholder="https://example.com/image.jpg" />
+              <input type="url" name="photo" value="${this.esc(resolveMediaUrl(data?.photo) || '')}" class="${styles.input}" placeholder="https://example.com/image.jpg" />
             </label>
           </fieldset>
 

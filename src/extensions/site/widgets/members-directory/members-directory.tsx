@@ -3,6 +3,7 @@ import { window as wixWindow } from '@wix/site-window';
 import styles from './members-directory.module.css';
 
 import { DIRECTORY_COLLECTION_ID as DEFAULT_COLLECTION } from '../../../shared/constants';
+import { resolveMediaUrl, type PhotoValue } from '../../../shared/media';
 
 interface Member {
   _id: string
@@ -21,7 +22,7 @@ interface Member {
   facebook?: string
   instagram?: string
   linkedin?: string
-  photo?: string
+  photo?: PhotoValue
   businessName?: string
 }
 
@@ -176,12 +177,13 @@ class MembersDirectory extends HTMLElement {
     const initials = ((member.name || '?')[0] + (member.lastName || '')[0]).toUpperCase() || '?';
     const displayName = member.organizationName || member.businessName || [member.name, member.lastName].filter(Boolean).join(' ') || 'Member';
     const categories = member.categories ? member.categories.split(',').map(c => c.trim()) : [];
+    const photoUrl = resolveMediaUrl(member.photo);
 
     return `
       <div class="${styles.card}">
         <div class="${styles.cardHeader}">
-          ${member.photo
-            ? `<img class="${styles.photo}" src="${this.esc(member.photo)}" alt="${this.esc(displayName)}" />`
+          ${photoUrl
+            ? `<img class="${styles.photo}" src="${this.esc(photoUrl)}" alt="${this.esc(displayName)}" />`
             : `<div class="${styles.photoPlaceholder}">${initials}</div>`
           }
           <div class="${styles.cardTitleGroup}">

@@ -71,5 +71,7 @@ Initial setup can be verified in the Wix Dashboard → Content Manager — look 
 - [x] Admin dashboard page (link to Content Manager)
 - [x] Data store abstraction (localStorage in dev, Wix Data in prod)
 - [x] DC-DATA permissions configured in Dev Center
+- [ ] Deploy app
+- [ ] Public dynamic pages for members
 - [ ] Public members directory repeater guide / template
 - [ ] Deploy to Danielle's live site

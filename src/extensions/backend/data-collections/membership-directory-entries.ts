@@ -25,7 +25,7 @@ export default {
     { key: 'facebook', displayName: 'Facebook', type: 'URL' },
     { key: 'instagram', displayName: 'Instagram', type: 'URL' },
     { key: 'linkedin', displayName: 'LinkedIn', type: 'URL' },
-    { key: 'photo', displayName: 'Image URL', type: 'TEXT' },
+    { key: 'photo', displayName: 'Photo', type: 'IMAGE' },
     { key: 'joinDate', displayName: 'Join Date', type: 'DATE' },
     { key: 'published', displayName: 'Published', type: 'BOOLEAN' },
   ],
